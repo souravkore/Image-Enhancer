@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Enhancer</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="container mt-5">
+    <div id="uploadSection">
+        <div class="mb-3">
+            <label for="uploadInput" class="form-label">Choose an image:</label>
+            <input type="file" class="form-control" id="uploadInput" accept="image/*" onchange="previewImage()">
+        </div>
+    </div>
+
+    <div id="imageSection" style="display:none;">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="preview" class="form-label">Original Image:</label>
+                <img id="preview" class="img-fluid" alt="Original Image">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="enhancedPreview" class="form-label">Enhanced Image:</label>
+                <img id="enhancedPreview" class="img-fluid" alt="Enhanced Image">
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <button id="enhanceButton" class="btn btn-primary" onclick="enhanceImage()">Enhance Image</button>
+            <button id="resetButton" class="btn btn-secondary" onclick="resetImages()">Reset</button>
+            <br>
+            <div class="container mt-3">
+                <a id="downloadButton" class="btn btn-success btn-lg" style="display:none;"
+                    onclick="downloadEnhancedImage()" download>Download Enhanced Image</a>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/camanjs/4.1.2/caman.full.min.js"></script>
+    <script>
+        let originalImageURL = '';
+        let enhancedImageURL = '';
+
+        function previewImage() {
+            const uploadSection = document.getElementById('uploadSection');
+            const imageSection = document.getElementById('imageSection');
+            const previewImg = document.getElementById('preview');
+            const enhanceButton = document.getElementById('enhanceButton');
+            const resetButton = document.getElementById('resetButton');
+            const downloadButton = document.getElementById('downloadButton');
+
+            const input = document.getElementById('uploadInput');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    originalImageURL = e.target.result;
+                    previewImg.src = originalImageURL;
+
+                    enhanceButton.style.display = 'block';
+                    resetButton.style.display = 'none';
+                    downloadButton.style.display = 'none';
+
+                    uploadSection.style.display = 'none';
+                    imageSection.style.display = 'block';
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function enhanceImage() {
+            const enhancedPreviewImg = document.getElementById('enhancedPreview');
+            const enhanceButton = document.getElementById('enhanceButton');
+            const resetButton = document.getElementById('resetButton');
+            const downloadButton = document.getElementById('downloadButton');
+
+            // Create a new image element to avoid affecting the original preview
+            const tempImage = new Image();
+            tempImage.src = originalImageURL;
+
+            tempImage.onload = function () {
+                // Create a canvas to draw the temporary image
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = tempImage.width;
+                canvas.height = tempImage.height;
+                ctx.drawImage(tempImage, 0, 0);
+
+                // Apply enhancements using CamanJS
+                Caman(canvas, function () {
+                    this.brightness(20);    // Increase brightness
+                    this.contrast(10);       // Adjusted contrast
+                    this.saturation(20);    // Increase saturation
+                    this.sharpen(5);        // Sharpen the image
+                    this.render();
+
+                    enhancedImageURL = canvas.toDataURL('image/jpeg'); // Convert canvas to data URL
+                    enhancedPreviewImg.src = enhancedImageURL;
+                    enhanceButton.style.display = 'none';
+                    resetButton.style.display = 'block';
+                    downloadButton.style.display = 'block';
+                });
+            };
+        }
+
+        function resetImages() {
+            const uploadSection = document.getElementById('uploadSection');
+            const imageSection = document.getElementById('imageSection');
+            const downloadButton = document.getElementById('downloadButton');
+
+            uploadSection.style.display = 'block';
+            imageSection.style.display = 'none';
+            downloadButton.style.display = 'none';
+
+            originalImageURL = '';
+            enhancedImageURL = '';
+
+            // Reset the input field value
+            uploadInput.value = '';
+
+            const previewImg = document.getElementById('preview');
+            previewImg.src = ''; // Reset the image source
+
+            location.reload();
+        }
+
+        function downloadEnhancedImage() {
+            const link = document.createElement('a');
+            link.href = enhancedImageURL;
+            link.download = 'enhanced_image.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+
+</html>

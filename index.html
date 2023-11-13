@@ -31,8 +31,8 @@
         </div>
 
         <div class="mb-3">
-            <button id="enhanceButton" class="btn btn-primary" onclick="enhanceImage()">Enhance Image</button>
-            <button id="resetButton" class="btn btn-secondary" onclick="resetImages()">Reset</button>
+            <button id="enhanceButton" class="btn btn-primary btn-lg" onclick="enhanceImage()">Enhance Image</button>
+            <button id="resetButton" class="btn btn-secondary btn-lg" onclick="resetImages()">Reset</button>
             <br>
             <div class="container mt-3">
                 <a id="downloadButton" class="btn btn-success btn-lg" style="display:none;"
@@ -97,10 +97,10 @@
 
                 // Apply enhancements using CamanJS
                 Caman(canvas, function () {
-                    this.brightness(20);    // Increase brightness
-                    this.contrast(10);       // Adjusted contrast
-                    this.saturation(20);    // Increase saturation
-                    this.sharpen(5);        // Sharpen the image
+                    this.brightness(50);    // Increase brightness
+                    this.contrast(15);       // Adjusted contrast
+                    this.saturation(25);    // Increase saturation
+                    this.sharpen(15);        // Sharpen the image
                     this.render();
 
                     enhancedImageURL = canvas.toDataURL('image/jpeg'); // Convert canvas to data URL
